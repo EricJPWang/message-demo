@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        mailingListCreatedOut:
+          destination: MailingListCreatedTopic
+          contentType: application/json
+        mailingListRemovedOut:
+          destination: MailingListRemovedTopic
+          contentType: application/json
+        mailingListUpdatedOut:
+          destination: MailingListUpdatedTopic
+          contentType: application/json

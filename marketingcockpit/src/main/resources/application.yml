@@ -1,0 +1,37 @@
+server:
+  port: 8083
+
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        mailingListCreatedIn:
+          destination: MailingListCreatedTopic
+          group: mailingListCreated-group
+          contentType: application/json
+
+        mailingListUpdatedIn:
+          destination: MailingListUpdatedTopic
+          group: mailingListUpdated-group
+          contentType: application/json
+
+        mailingListRemovedIn:
+          destination: MailingListRemovedTopic
+          group: mailingListRemoved-group
+          contentType: application/json
+
+        contactCreatedIn:
+          destination: ContactCreatedTopic
+          group: contactCreated-group
+          contentType: application/json
+
+        contactUpdatedIn:
+          destination: ContactUpdatedTopic
+          group: contactUpdated-group
+          contentType: application/json
+
+        contactRemovedIn:
+          destination: ContactRemovedTopic
+          group: contactRemoved-group
+          contentType: application/json

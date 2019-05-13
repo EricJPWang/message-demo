@@ -1,0 +1,9 @@
+package lulunpengpeng.de.contact.repositories;
+
+import lulunpengpeng.de.contact.domain.Contact;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+@RepositoryRestResource(collectionResourceRel = "contact", path = "contacts")
+public interface ContactRepository extends JpaRepository<Contact, String> {
+}
