@@ -1,5 +1,7 @@
 package lulunpengpeng.de.marketingcockpit.domain.persist;
 
+import lombok.Data;
+import lombok.Value;
 import lulunpengpeng.de.marketingcockpit.domain.shared.Contact;
 import lulunpengpeng.de.marketingcockpit.domain.shared.MailingList;
 
@@ -7,7 +9,8 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "mailinglist-contact")
+@Data
+@Table(name = "mailinglist_contact")
 public class MailinglistContactMapper {
     @Id
     @GeneratedValue

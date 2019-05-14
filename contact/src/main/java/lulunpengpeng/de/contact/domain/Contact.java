@@ -34,6 +34,6 @@ public class Contact {
     
     
     public boolean hasWarning() {
-        return Stream.of(firstName, lastName, email, company).allMatch(StringUtils::isEmpty);
+        return Stream.of(firstName, lastName, email, company).anyMatch(StringUtils::isEmpty);
     }
 }

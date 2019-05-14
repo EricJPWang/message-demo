@@ -29,7 +29,7 @@ public class IncomingMessageListener {
 
     @StreamListener(MarketingCockpitChannels.MAILING_LIST_CREATED_IN)
     void receiveMailingListCreatedEvent(MailingListCreatedEvent event) {
-        log.info("receiving mailinglist created event");
+        log.info("receiving mailinglist created event" + event);
         Optional<MailingList> mailingListOptional = mailingListRepository.findById(event.getMailingListId());
         if (mailingListOptional.isPresent()) {
             log.error(String.format("mailing with given id %s exists already", event.getMailingListId()));
@@ -43,7 +43,7 @@ public class IncomingMessageListener {
 
     @StreamListener(MarketingCockpitChannels.MAILING_LIST_REMOVED_IN)
     void receiveMailingListRemovedEvent(MailingListRemovedEvent event) {
-        log.info(("receiving mailinglist removed event"));
+        log.info(("receiving mailinglist removed event" + event));
         Optional<MailingList> mailingListOptional = mailingListRepository.findById(event.getMailingListId());
         if (!mailingListOptional.isPresent()) {
             log.error(String.format("Cannot find mailing list with id %s for mailinglist removed event",
@@ -54,7 +54,7 @@ public class IncomingMessageListener {
 
     @StreamListener(MarketingCockpitChannels.CONTACT_CREATED_IN)
     void receiveContactCreatedEvent(ContactCreatedEvent event) {
-        log.info("receiving contact created event");
+        log.info("receiving contact created event " + event);
         Optional<Contact> contactOptional = contactRepository.findById(event.getContactId());
         if (contactOptional.isPresent()) {
             log.error(String.format("contact with given id %s exists already", event.getContactId()));
@@ -78,7 +78,7 @@ public class IncomingMessageListener {
 
     @StreamListener(MarketingCockpitChannels.CONTACT_UPDATED_IN)
     void receiveContactUpdatedEvent(ContactUpdatedEvent event) {
-        log.info("receiving contact updated event");
+        log.info("receiving contact updated event " + event);
         Optional<Contact> contactOptional = contactRepository.findById(event.getContactId());
         if (! contactOptional.isPresent()) {
             log.error(String.format("cannot find contact with given id ", event.getContactId()));
