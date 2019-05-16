@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Value
-public class ContactCreatedEvent implements Serializable {
+public class ContactCreatedEvent implements ContactEvent, Serializable {
     private String contactId;
     private boolean hasWarning;
     private LocalDate updatedTime;

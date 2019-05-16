@@ -1,8 +1,8 @@
 package lulunpengpeng.de.marketingcockpit.messaging;
 
 import lombok.extern.log4j.Log4j2;
-import lulunpengpeng.de.marketingcockpit.domain.shared.Contact;
-import lulunpengpeng.de.marketingcockpit.domain.shared.MailingList;
+import lulunpengpeng.de.marketingcockpit.events.shared.Contact;
+import lulunpengpeng.de.marketingcockpit.events.shared.MailingList;
 import lulunpengpeng.de.marketingcockpit.events.*;
 import lulunpengpeng.de.marketingcockpit.repositories.ContactRepository;
 import lulunpengpeng.de.marketingcockpit.repositories.MailingListRepository;
@@ -35,9 +35,20 @@ public class IncomingMessageListener {
             log.error(String.format("mailing with given id %s exists already", event.getMailingListId()));
             return;
         }
-        MailingList mailingList = MailingList.builder().mailingListId(event.getMailingListId())
-                .location(event.getLocation()).eventType(event.getEventType()).build();
-        mailingListRepository.save(mailingList);
+        saveMailingListFromEvent(event);
+    }
+
+
+    @StreamListener(MarketingCockpitChannels.MAILING_LIST_UPDATED_IN)
+    void receiveMailingListUpatedEvent(MailingListUpdatedEvent event) {
+        log.info("receiving mailinglist updated event" + event);
+        Optional<MailingList> mailingListOptional = mailingListRepository.findById(event.getMailingListId());
+        if (!mailingListOptional.isPresent()) {
+            log.error(String.format("Cannot find mailing list with id %s for mailinglist removed event",
+                    event.getMailingListId()));
+            return;
+        }
+        saveMailingListFromEvent(event);
     }
 
 
@@ -50,7 +61,9 @@ public class IncomingMessageListener {
                     event.getMailingListId()));
             return;
         }
+        mailingListRepository.delete(mailingListOptional.get());
     }
+
 
     @StreamListener(MarketingCockpitChannels.CONTACT_CREATED_IN)
     void receiveContactCreatedEvent(ContactCreatedEvent event) {
@@ -60,8 +73,7 @@ public class IncomingMessageListener {
             log.error(String.format("contact with given id %s exists already", event.getContactId()));
             return;
         }
-        Contact contact = Contact.builder().contactId(event.getContactId()).hasWarning(event.isHasWarning()).build();
-        contactRepository.save(contact);
+        saveContactFromEvent(event);
     }
 
     @StreamListener(MarketingCockpitChannels.CONTACT_REMOVED_IN)
@@ -72,15 +84,14 @@ public class IncomingMessageListener {
             log.error(String.format("cannot find contact with given id ", event.getContactId()));
             return;
         }
-        Contact contact = Contact.builder().contactId(event.getContactId()).hasWarning(event.isHasWarning()).build();
-        contactRepository.save(contact);
+        saveContactFromEvent(event);
     }
 
     @StreamListener(MarketingCockpitChannels.CONTACT_UPDATED_IN)
     void receiveContactUpdatedEvent(ContactUpdatedEvent event) {
         log.info("receiving contact updated event " + event);
         Optional<Contact> contactOptional = contactRepository.findById(event.getContactId());
-        if (! contactOptional.isPresent()) {
+        if (!contactOptional.isPresent()) {
             log.error(String.format("cannot find contact with given id ", event.getContactId()));
             return;
         }
@@ -89,10 +100,16 @@ public class IncomingMessageListener {
         contactRepository.save(contactEntity);
     }
 
+    private void saveMailingListFromEvent(MailingListEvent event) {
+        MailingList mailingList = MailingList.builder().mailingListId(event.getMailingListId())
+                .location(event.getLocation())
+                .eventType(event.getEventType())
+                .build();
+        mailingListRepository.save(mailingList);
+    }
 
-
-
-
-
-
+    private void saveContactFromEvent(ContactEvent event) {
+        Contact contact = Contact.builder().contactId(event.getContactId()).hasWarning(event.isHasWarning()).build();
+        contactRepository.save(contact);
+    }
 }

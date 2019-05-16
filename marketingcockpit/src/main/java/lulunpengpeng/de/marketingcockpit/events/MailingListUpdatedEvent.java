@@ -8,9 +8,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Value
-public class MailingListCreatedEvent implements Serializable, MailingListEvent {
+public class MailingListUpdatedEvent implements Serializable, MailingListEvent {
     private String mailingListId;
     private EventType eventType;
     private Location location;
     private LocalDate updatedTime;
 }
+
