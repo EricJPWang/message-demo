@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;
@@ -20,9 +21,13 @@ public class Contact {
     @GeneratedValue
     private UUID id;
 
+    @ColumnTransformer(read = "pgp_sym_decrypt(first_name::bytea, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
     private String firstName;
+    @ColumnTransformer(read = "pgp_sym_decrypt(last_name::bytea, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
     private String lastName;
+    @ColumnTransformer(read = "pgp_sym_decrypt(email::bytea, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
     private String email;
+    @ColumnTransformer(read = "pgp_sym_decrypt(company::bytea, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
     private String company;
 
     public Contact(String firstName, String lastName, String email, String company) {
