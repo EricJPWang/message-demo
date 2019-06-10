@@ -1,9 +1,6 @@
 package lulunpengpeng.de.contact.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +27,7 @@ public class Contact {
     @ColumnTransformer(read = "pgp_sym_decrypt(company::bytea, 'mySecretKey')", write = "pgp_sym_encrypt(?, 'mySecretKey')")
     private String company;
 
+    @Builder
     public Contact(String firstName, String lastName, String email, String company) {
         this.firstName = firstName;
         this.lastName = lastName;

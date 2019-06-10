@@ -6,6 +6,7 @@ import lulunpengpeng.de.contact.dtos.ContactDTO;
 import lulunpengpeng.de.contact.events.ContactRemovedEvent;
 import lulunpengpeng.de.contact.events.ContactUpdatedEvent;
 import lulunpengpeng.de.contact.messaging.ContactChannels;
+import lulunpengpeng.de.contact.messaging.ContactMessagingService;
 import lulunpengpeng.de.contact.repositories.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,16 @@ import static org.springframework.messaging.support.MessageBuilder.withPayload;
 
 @RestController
 @Log4j2
-class ContactController {
+public class ContactController {
 
     private ContactRepository contactRepository;
-    private ContactChannels channels;
+    private ContactMessagingService contactMessagingService;
+
 
     @Autowired
-    ContactController(ContactRepository contactRepository, ContactChannels channels) {
+    ContactController(ContactRepository contactRepository, ContactMessagingService contactMessagingService) {
         this.contactRepository = contactRepository;
-        this.channels = channels;
+        this.contactMessagingService = contactMessagingService;
     }
 
     @GetMapping("contacts")
@@ -53,24 +55,26 @@ class ContactController {
     @PutMapping("contact")
     @ResponseStatus(HttpStatus.OK)
     void updateContact(@RequestBody ContactDTO contact) {
-        Contact contactEntity = contactRepository.findById(fromString(contact.getContactId())).orElseThrow(EntityNotFoundException::new);
-        contactEntity.setCompany(contact.getCompany());
-        contactEntity.setEmail(contact.getEmail());
-        contactEntity.setFirstName(contact.getFirstName());
-        contactEntity.setLastName(contact.getLastName());
+        Contact contactEntity = findContact(contact.getContactId());
+        contact.toContact(contactEntity);
         contactRepository.save(contactEntity);
 
-        ContactUpdatedEvent updatedEvent = new ContactUpdatedEvent(contactEntity.getId().toString(), contactEntity.hasWarning(), now());
-        log.info("updatedEvent" + updatedEvent);
-        channels.contactUpdatedOut().send(withPayload(updatedEvent).build());
+        contactMessagingService.sendContactUpdatedEvent(new ContactUpdatedEvent(contactEntity.getId().toString(),
+                contactEntity.hasWarning(), now()));
+
     }
+
 
     @DeleteMapping("contact/{contactId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteContact(@PathVariable String contactId) {
-        Contact contactEntity = contactRepository.findById(fromString(contactId)).orElseThrow(EntityNotFoundException::new);
+        Contact contactEntity = findContact(contactId);
         contactRepository.delete(contactEntity);
-        channels.contactRemovedOut().send(withPayload(new ContactRemovedEvent(contactId, now())).build());
+        contactMessagingService.sendContactRemovedEvent(new ContactRemovedEvent(contactId, now()));
+    }
+
+    private Contact findContact(String contactId) {
+        return contactRepository.findById(fromString(contactId)).orElseThrow(EntityNotFoundException::new);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

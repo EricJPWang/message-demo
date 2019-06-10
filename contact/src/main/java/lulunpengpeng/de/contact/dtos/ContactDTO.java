@@ -16,6 +16,13 @@ public class ContactDTO implements Serializable {
     private String email;
     private String company;
 
+    public void toContact(Contact contactEntity) {
+        contactEntity.setCompany(this.company);
+        contactEntity.setEmail(this.email);
+        contactEntity.setFirstName(this.firstName);
+        contactEntity.setLastName(this.lastName);
+    }
+
     public static ContactDTO fromContact(Contact contact) {
         return new ContactDTO(contact.getId().toString(), contact.getFirstName(), contact.getLastName(),
                 contact.getEmail(), contact.getCompany());
