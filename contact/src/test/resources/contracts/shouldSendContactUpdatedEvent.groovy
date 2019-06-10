@@ -1,7 +1,6 @@
 package contracts
 
 import org.springframework.cloud.contract.spec.Contract
-import java.time.LocalDate
 
 Contract.make {
     description "should send a contact updated event"
