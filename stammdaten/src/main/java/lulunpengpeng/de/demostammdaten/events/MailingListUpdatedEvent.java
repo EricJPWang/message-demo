@@ -1,6 +1,7 @@
 package lulunpengpeng.de.demostammdaten.events;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
 import lulunpengpeng.de.demostammdaten.dtos.EventTypeDTO;
 import lulunpengpeng.de.demostammdaten.dtos.LocationDTO;
@@ -10,7 +11,8 @@ import java.time.LocalDate;
 
 @Value
 @AllArgsConstructor
-public class MailingListUpdatedEvent implements Serializable {
+@Builder
+public class MailingListUpdatedEvent implements Serializable, MailinglistEvent {
     private String mailingListId;
     private LocationDTO location;
     private EventTypeDTO eventType;

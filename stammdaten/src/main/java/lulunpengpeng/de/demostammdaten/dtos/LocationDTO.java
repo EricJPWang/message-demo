@@ -1,9 +1,6 @@
 package lulunpengpeng.de.demostammdaten.dtos;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lulunpengpeng.de.demostammdaten.domain.Location;
 
 import java.io.Serializable;
@@ -11,6 +8,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Builder
 public class LocationDTO implements Serializable {
     private String locationId;
     private String locationName;

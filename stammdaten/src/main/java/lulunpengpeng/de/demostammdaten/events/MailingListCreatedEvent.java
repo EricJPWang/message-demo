@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Value
 @AllArgsConstructor
 @Builder
-public class MailingListCreatedEvent implements Serializable {
+public class MailingListCreatedEvent implements Serializable, MailinglistEvent {
     private String mailingListId;
     private LocationDTO location;
     private EventTypeDTO eventType;

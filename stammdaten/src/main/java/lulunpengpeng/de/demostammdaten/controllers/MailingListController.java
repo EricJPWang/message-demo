@@ -6,9 +6,9 @@ import lulunpengpeng.de.demostammdaten.domain.MailingList;
 import lulunpengpeng.de.demostammdaten.dtos.EventTypeDTO;
 import lulunpengpeng.de.demostammdaten.dtos.LocationDTO;
 import lulunpengpeng.de.demostammdaten.dtos.MailingListDTO;
-import lulunpengpeng.de.demostammdaten.events.MailingListCreatedEvent;
 import lulunpengpeng.de.demostammdaten.events.MailingListDeletedEvent;
 import lulunpengpeng.de.demostammdaten.events.MailingListUpdatedEvent;
+import lulunpengpeng.de.demostammdaten.messaging.EventService;
 import lulunpengpeng.de.demostammdaten.messaging.StammdatenChannels;
 import lulunpengpeng.de.demostammdaten.repositories.EventTypeRepository;
 import lulunpengpeng.de.demostammdaten.repositories.LocationRepository;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 import static java.util.UUID.fromString;
@@ -31,19 +30,19 @@ import static org.springframework.messaging.support.MessageBuilder.withPayload;
 public class MailingListController {
 
     private MailingListRepository mailingListRepository;
-    private StammdatenChannels stammdatenChannels;
     private LocationRepository locationRepository;
     private EventTypeRepository eventTypeRepository;
+    private EventService eventService;
 
     @Autowired
     MailingListController(MailingListRepository mailingListRepository,
                           LocationRepository locationRepository,
                           EventTypeRepository eventTypeRepository,
-                          StammdatenChannels stammdatenChannels) {
+                          EventService eventService) {
         this.mailingListRepository = mailingListRepository;
-        this.stammdatenChannels = stammdatenChannels;
         this.locationRepository = locationRepository;
         this.eventTypeRepository = eventTypeRepository;
+        this.eventService = eventService;
     }
 
     @GetMapping("mailinglists")
@@ -77,7 +76,7 @@ public class MailingListController {
                 LocationDTO.fromLocation(location),
                 EventTypeDTO.fromEventType(eventType),
                 now());
-        this.stammdatenChannels.mailingListUpdatedOut().send(withPayload(event).build());
+        this.eventService.sentMailinglistUpdatedEvent(event);
     }
 
     @DeleteMapping(path = "mailinglist/{mailinglistId}")
@@ -87,7 +86,7 @@ public class MailingListController {
                 .orElseThrow(EntityNotFoundException::new);
         mailingListRepository.delete(mailingListEntity);
         MailingListDeletedEvent event = new MailingListDeletedEvent(mailinglistId, now());
-        this.stammdatenChannels.mailingListRemovedOut().send(withPayload(event).build());
+        this.eventService.sendMailinglistRemovedEvent(event);
     }
 
     @ExceptionHandler
